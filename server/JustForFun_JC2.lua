@@ -9,6 +9,7 @@ function JustForFun_JC2:__init()
 	self:ReadBanners()
 	
 	Events:Subscribe("PostTick", self, self.PostTick)
+	Events:Subscribe("PlayerChat", self, self.PlayerChat)
 end
 
 function JustForFun_JC2:ReadBanners()
@@ -53,6 +54,28 @@ function JustForFun_JC2:SendBanner(Banner)
 	Network:Broadcast("Banner", t)
 	print(t.banner)
 	self.CurrentBanner = self.CurrentBanner + 1
+end
+
+function JustForFun_JC2:PlayerChat(args)
+	local msg = args.text
+    local player = args.player
+
+	if(msg:sub(1, 1) ~= "/" ) then
+		return true
+	end    
+    
+    local cmdargs = {}
+    for word in string.gmatch(msg, "[^%s]+") do
+        table.insert(cmdargs, word)
+    end
+    
+    if(cmdargs[1] == "/getpos") then
+		Chat:Broadcast("Postion|" .. player:GetName() .. ":" .. tostring(player:GetPosition()),Color(255,255,255,255))
+	elseif(cmdargs[1] == "/tphere") then
+		Player.GetById(cmdargs[2]):Teleport(player:GetPosition(),player:GetAngle())
+    end
+    
+    return false
 end
 
 justforfun = JustForFun_JC2()

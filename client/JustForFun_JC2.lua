@@ -2,7 +2,8 @@ class "JustForFun_JC2"
 
 function JustForFun_JC2:__init()
 	self.Banner = ""
-	self.BannerTime = 0
+	self.BannerTime = os.clock()
+	self.FadeOut = 255
 
 	Network:Subscribe("Banner", self, self.BannerNetwork)
 	Events:Subscribe("Render", self, self.Render)
@@ -10,18 +11,41 @@ end
 
 function JustForFun_JC2:BannerNetwork(t)
 	self.Banner = t.banner
-	self.BannerTime = os.clock
+	self.BannerTime = os.clock()
+	self.FadeOut = 255
 end
 
 function JustForFun_JC2:Render(args)
 	if Game:GetState() ~= GUIState.Game then return end
 
-	local ChatPosition = Vector2(Render.Width/2, 0)
-	
-	ChatPosition.y = ChatPosition.y + Render:GetTextHeight(self.Banner, TextSize.Large)
-	ChatPosition.x = ChatPosition.x - Render:GetTextWidth(self.Banner, TextSize.Large) / 2
+	self:RenderBanner()
+end
+
+function JustForFun_JC2:RenderBanner() 
+	local BannerPosition = Vector2(Render.Width/2, 0)
+	if os.clock() - self.BannerTime < 10 then
+		BannerPosition.y = BannerPosition.y + Render:GetTextHeight(self.Banner, TextSize.Large)
+		BannerPosition.x = BannerPosition.x - Render:GetTextWidth(self.Banner, TextSize.Large) / 2
 		
-	Render:DrawText(ChatPosition, self.Banner, Color(255, 255, 0, 255),TextSize.Large)
+		local Alpha = self:BannerFadeOut()	
+		Render:DrawText(BannerPosition,self.Banner,Color(48, 0, 0, Alpha),TextSize.Large)
+		Render:DrawText(BannerPosition + Vector2( 1, 1 ), self.Banner,Color(48, 0, 0, Alpha * 0.5),TextSize.Large)
+	end
+end
+
+function JustForFun_JC2:BannerFadeOut()
+	local DiffTime = os.clock() - self.BannerTime
+	
+	if DiffTime < 8 then
+		self.FadeOut = 254
+		return 255
+	elseif self.FadeOut < 255 and self.FadeOut > 2 then
+		local Interval = DiffTime - 8
+		self.FadeOut = 255 * (1 - Interval)
+		return 255 * (1 - Interval)
+	else
+		return 0
+	end
 end
 
 justforfun = JustForFun_JC2()

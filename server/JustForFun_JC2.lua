@@ -10,6 +10,8 @@ function JustForFun_JC2:__init()
 	
 	Events:Subscribe("PostTick", self, self.PostTick)
 	Events:Subscribe("PlayerChat", self, self.PlayerChat)
+	Events:Subscribe("PlayerJoin", self, self.PlayerJoin)
+	Events:Subscribe("PlayerQuit", self, self.PlayerQuit)
 end
 
 function JustForFun_JC2:ReadBanners()
@@ -52,7 +54,6 @@ end
 function JustForFun_JC2:SendBanner(Banner)
 	t = {["banner"] = Banner}
 	Network:Broadcast("Banner", t)
-	print(t.banner)
 	self.CurrentBanner = self.CurrentBanner + 1
 end
 
@@ -72,10 +73,18 @@ function JustForFun_JC2:PlayerChat(args)
     if(cmdargs[1] == "/getpos") then
 		Chat:Broadcast("Postion|" .. player:GetName() .. ":" .. tostring(player:GetPosition()),Color(255,255,255,255))
 	elseif(cmdargs[1] == "/tphere") then
-		Player.GetById(cmdargs[2]):Teleport(player:GetPosition(),player:GetAngle())
+		Player.GetById(tonumber(cmdargs[2])):Teleport(player:GetPosition(),player:GetAngle())
     end
     
     return false
+end
+
+function JustForFun_JC2:PlayerJoin(args)
+
+end
+
+function JustForFun_JC2:PlayerQuit(args)
+
 end
 
 justforfun = JustForFun_JC2()

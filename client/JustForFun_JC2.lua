@@ -19,6 +19,7 @@ function JustForFun_JC2:Render(args)
 	if Game:GetState() ~= GUIState.Game then return end
 
 	self:RenderBanner()
+	self:RenderPosition()
 end
 
 function JustForFun_JC2:RenderBanner() 
@@ -46,6 +47,14 @@ function JustForFun_JC2:BannerFadeOut()
 	else
 		return 0
 	end
+end
+
+function JustForFun_JC2:RenderPosition()
+	local CurrentPosition = LocalPlayer:GetPosition()
+	local ScreenPosition = Vector2(65,185)
+	local ScreenPosition2 = Vector2(75,197)
+	Render:DrawText(ScreenPosition,"X:"..math.floor(CurrentPosition.x,0).." Y:"..math.floor(CurrentPosition.y,0),Color(255,255,255,255),10)
+	Render:DrawText(ScreenPosition2,"Z:"..math.floor(CurrentPosition.z,0),Color(255,255,255,255),10)
 end
 
 justforfun = JustForFun_JC2()

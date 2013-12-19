@@ -74,17 +74,19 @@ function JustForFun_JC2:PlayerChat(args)
 		Chat:Broadcast("Postion|" .. player:GetName() .. ":" .. tostring(player:GetPosition()),Color(255,255,255,255))
 	elseif(cmdargs[1] == "/tphere") then
 		Player.GetById(tonumber(cmdargs[2])):Teleport(player:GetPosition(),player:GetAngle())
+	elseif(cmdargs[1] == "/tpto") then
+		player:Teleport(Player.GetById(tonumber(cmdargs[2])):GetPosition(),Player.GetById(tonumber(cmdargs[2])):GetAngle())
     end
     
     return false
 end
 
 function JustForFun_JC2:PlayerJoin(args)
-
+	Chat:Broadcast("JFF|"..args.player:GetName().." has joined the server!",Color(255, 255, 0,255))
 end
 
 function JustForFun_JC2:PlayerQuit(args)
-
+	Chat:Broadcast("JFF|"..args.player:GetName().." has left the server!",Color(255, 255, 0,255))
 end
 
 justforfun = JustForFun_JC2()

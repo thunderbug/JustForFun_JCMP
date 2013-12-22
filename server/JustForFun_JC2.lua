@@ -1,5 +1,7 @@
 class "JustForFun_JC2"
 
+local mysql = require "luasql.mysql"
+
 function JustForFun_JC2:__init()
 	self.Banners = {}
 	self.AmountBanners = 0

@@ -1,8 +1,10 @@
 class "JustForFun_JC2"
 
-local mysql = require "luasql.mysql"
+local mysql = require("luasql.mysql")
 
 function JustForFun_JC2:__init()
+	self.MysqlConnection = ""
+
 	self.Banners = {}
 	self.AmountBanners = 0
 	self.CurrentBanner = 0
@@ -14,6 +16,12 @@ function JustForFun_JC2:__init()
 	Events:Subscribe("PlayerChat", self, self.PlayerChat)
 	Events:Subscribe("PlayerJoin", self, self.PlayerJoin)
 	Events:Subscribe("PlayerQuit", self, self.PlayerQuit)
+end
+
+function JustForFun_JC2:MysqlInit()
+	dofile("ServerSettings.lua")
+	self.mysql:connect(self.MysqlConnection,MysqlUsername,MysqlPassword,MysqlHost,MysqlPort)
+	print(self.MysqlConnection)
 end
 
 function JustForFun_JC2:ReadBanners()

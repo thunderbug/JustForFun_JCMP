@@ -16,12 +16,13 @@ function JustForFun_JC2:__init()
 	Events:Subscribe("PlayerChat", self, self.PlayerChat)
 	Events:Subscribe("PlayerJoin", self, self.PlayerJoin)
 	Events:Subscribe("PlayerQuit", self, self.PlayerQuit)
+	Events:Subscribe("PlayerSpawn", self, self.PlayerSpawn)
 end
 
 function JustForFun_JC2:MysqlInit()
 	dofile("ServerSettings.lua")
 	self.mysql:connect(self.MysqlConnection,MysqlUsername,MysqlPassword,MysqlHost,MysqlPort)
-	print(self.MysqlConnection)
+	self.MysqlConnection:execute("USE "..MysqlDatabase)
 end
 
 function JustForFun_JC2:ReadBanners()
@@ -86,17 +87,26 @@ function JustForFun_JC2:PlayerChat(args)
 		Player.GetById(tonumber(cmdargs[2])):Teleport(player:GetPosition(),player:GetAngle())
 	elseif(cmdargs[1] == "/tpto") then
 		player:Teleport(Player.GetById(tonumber(cmdargs[2])):GetPosition(),Player.GetById(tonumber(cmdargs[2])):GetAngle())
+	elseif(cmdargs[1] == "/spawn") then
+		player:Teleport(Vector3(-10726, 203, -2714),player:GetAngle())
     end
     
     return false
 end
 
 function JustForFun_JC2:PlayerJoin(args)
-	Chat:Broadcast("JFF|"..args.player:GetName().." has joined the server!",Color(255, 255, 0,255))
+	Chat:Broadcast("JFF| "..args.player:GetName().." has joined the server!",Color(255, 255, 0,255))
+	self.MysqlConnection:execute("INSERT INTO `Player` (`Name`, `SteamID`, `X`, `Y`, `Z`) VALUES ('"..args.player:GetName().."', '"..args.player:GetSteamId().."', '"..args.player:GetSteamId().."', -10726, 203, -2714)")
 end
 
 function JustForFun_JC2:PlayerQuit(args)
-	Chat:Broadcast("JFF|"..args.player:GetName().." has left the server!",Color(255, 255, 0,255))
+	Chat:Broadcast("JFF| "..args.player:GetName().." has left the server!",Color(255, 255, 0,255))
+end
+
+function JustForFun_JC2:PlayerSpawn(args)
+	args.player:SetPosition(Vector3(-10726, 203, -2714))
+	
+	return false
 end
 
 justforfun = JustForFun_JC2()

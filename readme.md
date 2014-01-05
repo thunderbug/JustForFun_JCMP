@@ -9,17 +9,17 @@ Currently this plugin is heavely under development and i'm still learning how ev
 Features
 --------
 
-* A vehicle fuel system, depending on how fast you drive your fuel gets used (second bar under speed)
+* A vehicle fuel system, depending on how fast you drive your fuel gets used (second bar under speed).
 In the future I want to count in damage, car type for example a plane uses alot more then a normal car.
 
 * Saving player location on disconnect in mysql. 
 In the future there gets stored more in the database. Now it are just the X Y Z coordinates.
 
 * Your coordinates on the maps gets shown under the nav bar.
-In the future only admins stuff with enable disable
+In the future only admins stuff with enable disable.
 
-* Top Banners
-Not sure if i'm going to keep those
+* Top Banners.
+Not sure if i'm going to keep those.
 
 In The plannings
 ----------------
@@ -39,5 +39,5 @@ Commands
 Extra Info
 ----------
 
-I'm the proud founder of the justforfun community. Visit us at http://justforfun-gaming.com
+I'm the proud founder of the justforfun community. Visit us at http://justforfun-gaming.com .
 Or visit our just cause 2 mp server: 176.9.54.140:7777

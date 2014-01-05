@@ -4,8 +4,10 @@ function JustForFun_JC2:__init()
 	self.Banner = ""
 	self.BannerTime = os.clock()
 	self.FadeOut = 255
+	self.fuel = 1
 
 	Network:Subscribe("Banner", self, self.BannerNetwork)
+	Network:Subscribe("VehicleFuel", self, self.FuelCheck)
 	Events:Subscribe("Render", self, self.Render)
 end
 
@@ -13,6 +15,13 @@ function JustForFun_JC2:BannerNetwork(t)
 	self.Banner = t.banner
 	self.BannerTime = os.clock()
 	self.FadeOut = 255
+end
+
+function JustForFun_JC2:FuelCheck(VehicleFuel)
+	if not LocalPlayer:InVehicle() then return end
+	
+	self.fuel = VehicleFuel[LocalPlayer:GetVehicle():GetId()]
+	Events:Fire("SendFuel",self.fuel)
 end
 
 function JustForFun_JC2:Render(args)

@@ -1,18 +1,26 @@
 class "JustForFun_JC2"
 
 function JustForFun_JC2:__init()
+	-- Mysql
 	self.luasql = require("luasql.mysql")
 	self.mysql = self.luasql.mysql()
 	self.MysqlConnection = nil
 
+	-- Ingame Banners
 	self.Banners = {}
 	self.AmountBanners = 0
 	self.CurrentBanner = 0
-	self.timer = Timer()
+	self.BannerTimer = Timer()
 
 	self:ReadBanners()
 	self:MysqlInit()
 	
+	-- Fuel
+	self.Vehicle = {}
+	self.VehicleTime = Timer()
+	
+	-- Events
+	Events:Subscribe("PreTick", self, self.PreTick)
 	Events:Subscribe("PostTick", self, self.PostTick)
 	Events:Subscribe("PlayerChat", self, self.PlayerChat)
 	Events:Subscribe("PlayerJoin", self, self.PlayerJoin)
@@ -63,15 +71,44 @@ function JustForFun_JC2:ReadBanners()
 	file:close()
 end
 
+function JustForFun_JC2:PreTick(args)
+	for SVehicle in Server:GetVehicles() do
+		if self.Vehicle[SVehicle:GetId()] == 0 then
+			SVehicle:SetLinearVelocity(Vector3(0,0,0))
+		end
+	end
+end
+
 function JustForFun_JC2:PostTick(args)
 	if self.CurrentBanner > 0 then
-		if self.timer:GetSeconds() > 15 then
+		if self.BannerTimer:GetSeconds() > 15 then
 			if self.CurrentBanner > self.AmountBanners then
 				self.CurrentBanner = 1
 			end
 			self:SendBanner(self.Banners[self.CurrentBanner])
-			self.timer:Restart()
+			self.BannerTimer:Restart()
 		end
+	end
+	
+	if self.VehicleTime:GetMilliseconds() > 500 then
+		local OldVehicles = self.Vehicle
+		self.Vehicle = { }
+	
+		for SVehicle in Server:GetVehicles() do
+			if OldVehicles[SVehicle:GetId()] == nil then
+				self.Vehicle[SVehicle:GetId()] = 1
+			else
+				local Speed = SVehicle:GetLinearVelocity():Length() * 3.6
+				self.Vehicle[SVehicle:GetId()] = OldVehicles[SVehicle:GetId()] - (0.00001 * Speed + 0.0002)
+				if self.Vehicle[SVehicle:GetId()] < 0 or self.Vehicle[SVehicle:GetId()] == 0 then
+					self.Vehicle[SVehicle:GetId()] = 0
+					SVehicle:SetLinearVelocity(Vector3(0,0,0))
+				end
+			end
+		end
+		
+		Network:Broadcast("VehicleFuel",self.Vehicle)
+		self.VehicleTime:Restart()
 	end
 end
 
@@ -102,6 +139,10 @@ function JustForFun_JC2:PlayerChat(args)
 		player:Teleport(Player.GetById(tonumber(cmdargs[2])):GetPosition(),Player.GetById(tonumber(cmdargs[2])):GetAngle())
 	elseif(cmdargs[1] == "/spawn") then
 		player:Teleport(Vector3(-10726, 203, -2714),player:GetAngle())
+	elseif(cmdargs[1] == "/refuel") then
+		if not player:InVehicle() then return end
+		self.Vehicle[player:GetVehicle():GetId()] = 1
+		Chat:Send(player,"Vehicle refueld, have fun driving again!",Color(255,255,255,255))
     end
     
     return false

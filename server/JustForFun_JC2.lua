@@ -110,22 +110,22 @@ end
 function JustForFun_JC2:PlayerJoin(args)
 	Chat:Broadcast("JFF| "..args.player:GetName().." has joined the server!",Color(255, 255, 0,255))
 	local PlayerInfo = self.MysqlConnection:execute("SELECT * FROM  `Player` WHERE  `SteamID` =  '"..tostring(args.player:GetSteamId()).."'")
-	if PlayerInfo:numrows() == 1){
-		
-	}else{
-		self.MysqlConnection:execute("INSERT INTO `Player` (`Name`, `SteamID`, `X`, `Y`, `Z`, `A`) VALUES ('"..args.player:GetName().."', '"..tostring(args.player:GetSteamId()).."', -10726, 203, -2714, 0);")
-	}
+	if PlayerInfo:numrows() == 0 then
+		self.MysqlConnection:execute("INSERT INTO `Player` (`Name`, `SteamID`, `X`, `Y`, `Z`, `A`) VALUES ('"..args.player:GetName().."', '"..tostring(args.player:GetSteamId()).."', -10726, 203, -2714);")
+	end
 end
 
 function JustForFun_JC2:PlayerQuit(args)
 	Chat:Broadcast("JFF| "..args.player:GetName().." has left the server!",Color(255, 255, 0,255))
 	
 	local Position = args.player:GetPosition()
-	--self.MysqlConnection:execute("INSERT INTO `Player` (`Name`, `SteamID`, `X`, `Y`, `Z`, `A`) VALUES ('"..args.player:GetName().."', '"..tostring(args.player:GetSteamId()).."', "..tostring(Position.x)..", "..tostring(Position.y)..", "..tostring(Position.z)..", "..tostring(args.player:GetAngle())..");")
+	self.MysqlConnection:execute("UPDATE `Player` SET  `X` =  '"..tostring(Position.x).."', `Y` =  '"..tostring(Position.y).."', `Z` =  '"..tostring(Position.z).."' WHERE  `SteamID` = '"..tostring(args.player:GetSteamId()).."';")
 end
 
 function JustForFun_JC2:PlayerSpawn(args)
-	args.player:SetPosition(Vector3(-10726, 203, -2714))
+	local PlayerInfo = self.MysqlConnection:execute("SELECT * FROM  `Player` WHERE  `SteamID` =  '"..tostring(args.player:GetSteamId()).."'")
+	local Player = PlayerInfo:fetch({},"a")
+	args.player:SetPosition(Vector3(tonumber(Player["X"]),tonumber(Player["Y"]),tonumber(Player["Z"])))
 	
 	return false
 end

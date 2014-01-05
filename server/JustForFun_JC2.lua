@@ -1,9 +1,9 @@
 class "JustForFun_JC2"
 
-local mysql = require("luasql.mysql")
-
 function JustForFun_JC2:__init()
-	self.MysqlConnection = ""
+	self.luasql = require("luasql.mysql")
+	self.mysql = self.luasql.mysql()
+	self.MysqlConnection = nil
 
 	self.Banners = {}
 	self.AmountBanners = 0
@@ -21,16 +21,21 @@ function JustForFun_JC2:__init()
 end
 
 function JustForFun_JC2:MysqlInit()
-	local file = io.open("ServerSettings.lua", "r")
-	Settings = io.read()
-	dofile(Settings)
-	print(Settings)
-	self.MysqlConnection = self.mysql:connect(MysqlDatabase,MysqlUsername,MysqlPassword,MysqlHost,MysqlPort)
+	local Settings = { }
+
+	local file = io.open("ServerSettings.txt", "r")
+	for line in file:lines() do
+		local TempSetting = self:explode(" = ",line)
+		Settings[TempSetting[1]] = TempSetting[2]
+	end
 	
-	print("<mysql> MYSQL driver version is: "..luasql._MYSQLVERSION)
-	print("<mysql> "..luasql._COPYRIGHT)
-	print("<mysql> "..luasql._DESCRIPTION)
-	print("<mysql> "..luasql._VERSION)
+	self.MysqlConnection = self.mysql:connect(Settings["MysqlDatabase"],Settings["MysqlUsername"],Settings["MysqlPassword"],Settings["MysqlHost"],Settings["MysqlPort"])
+	self.MysqlConnection:setautocommit(true)
+	
+	print("<mysql> MYSQL driver version is: "..self.luasql._MYSQLVERSION)
+	print("<mysql> "..self.luasql._COPYRIGHT)
+	print("<mysql> "..self.luasql._DESCRIPTION)
+	print("<mysql> "..self.luasql._VERSION)
 end
 
 function JustForFun_JC2:ReadBanners()
@@ -104,17 +109,37 @@ end
 
 function JustForFun_JC2:PlayerJoin(args)
 	Chat:Broadcast("JFF| "..args.player:GetName().." has joined the server!",Color(255, 255, 0,255))
-	self.MysqlConnection:execute("INSERT INTO `Player` (`Name`, `SteamID`, `X`, `Y`, `Z`) VALUES ('"..args.player:GetName().."', '"..args.player:GetSteamId().."', '"..args.player:GetSteamId().."', -10726, 203, -2714)")
+	local PlayerInfo = self.MysqlConnection:execute("SELECT * FROM  `Player` WHERE  `SteamID` =  '"..tostring(args.player:GetSteamId()).."'")
+	if PlayerInfo:numrows() == 1){
+		
+	}else{
+		self.MysqlConnection:execute("INSERT INTO `Player` (`Name`, `SteamID`, `X`, `Y`, `Z`, `A`) VALUES ('"..args.player:GetName().."', '"..tostring(args.player:GetSteamId()).."', -10726, 203, -2714, 0);")
+	}
 end
 
 function JustForFun_JC2:PlayerQuit(args)
 	Chat:Broadcast("JFF| "..args.player:GetName().." has left the server!",Color(255, 255, 0,255))
+	
+	local Position = args.player:GetPosition()
+	--self.MysqlConnection:execute("INSERT INTO `Player` (`Name`, `SteamID`, `X`, `Y`, `Z`, `A`) VALUES ('"..args.player:GetName().."', '"..tostring(args.player:GetSteamId()).."', "..tostring(Position.x)..", "..tostring(Position.y)..", "..tostring(Position.z)..", "..tostring(args.player:GetAngle())..");")
 end
 
 function JustForFun_JC2:PlayerSpawn(args)
 	args.player:SetPosition(Vector3(-10726, 203, -2714))
 	
 	return false
+end
+
+function JustForFun_JC2:explode(div,str) -- credit: http://richard.warburton.it
+  if (div=='') then return false end
+  local pos,arr = 0,{}
+  -- for each divider found
+  for st,sp in function() return string.find(str,div,pos,true) end do
+    table.insert(arr,string.sub(str,pos,st-1)) -- Attach chars left of current divider
+    pos = sp + 1 -- Jump past current divider
+  end
+  table.insert(arr,string.sub(str,pos)) -- Attach chars right of last divider
+  return arr
 end
 
 justforfun = JustForFun_JC2()

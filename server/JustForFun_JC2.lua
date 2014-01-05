@@ -11,6 +11,7 @@ function JustForFun_JC2:__init()
 	self.timer = Timer()
 
 	self:ReadBanners()
+	self:MysqlInit()
 	
 	Events:Subscribe("PostTick", self, self.PostTick)
 	Events:Subscribe("PlayerChat", self, self.PlayerChat)
@@ -20,9 +21,16 @@ function JustForFun_JC2:__init()
 end
 
 function JustForFun_JC2:MysqlInit()
-	dofile("ServerSettings.lua")
-	self.mysql:connect(self.MysqlConnection,MysqlUsername,MysqlPassword,MysqlHost,MysqlPort)
-	self.MysqlConnection:execute("USE "..MysqlDatabase)
+	local file = io.open("ServerSettings.lua", "r")
+	Settings = io.read()
+	dofile(Settings)
+	print(Settings)
+	self.MysqlConnection = self.mysql:connect(MysqlDatabase,MysqlUsername,MysqlPassword,MysqlHost,MysqlPort)
+	
+	print("<mysql> MYSQL driver version is: "..luasql._MYSQLVERSION)
+	print("<mysql> "..luasql._COPYRIGHT)
+	print("<mysql> "..luasql._DESCRIPTION)
+	print("<mysql> "..luasql._VERSION)
 end
 
 function JustForFun_JC2:ReadBanners()

@@ -1,0 +1,5 @@
+MysqlHost = localhost
+MysqlPort = 3306
+MysqlDatabase = justcause
+MysqlUsername = root
+MysqlPassword = password

@@ -8,6 +8,7 @@ function JustForFun_JC2:__init()
 
 	Network:Subscribe("Banner", self, self.BannerNetwork)
 	Network:Subscribe("VehicleFuel", self, self.FuelCheck)
+	Events:Subscribe("InputPoll", self, self.InputPoll)
 	Events:Subscribe("Render", self, self.Render)
 end
 
@@ -64,6 +65,22 @@ function JustForFun_JC2:RenderPosition()
 	local ScreenPosition2 = Vector2(75,197)
 	Render:DrawText(ScreenPosition,"X:"..math.floor(CurrentPosition.x,0).." Y:"..math.floor(CurrentPosition.y,0),Color(255,255,255,255),10)
 	Render:DrawText(ScreenPosition2,"Z:"..math.floor(CurrentPosition.z,0),Color(255,255,255,255),10)
+end
+
+function JustForFun_JC2:InputPoll(args)
+	-- Disable Forward button when no fuel
+	if Input:GetValue(Action.Accelerate) == 1 or Input:GetValue(Action.Reverse) == 1 then
+print(self.fuel)
+		if self.fuel == 0 then
+			Input:SetValue(Action.Accelerate, 0)
+			Input:SetValue(Action.Reverse, 0)
+print("test")
+		else
+			Input:SetValue(Action.Accelerate, Input:GetValue(Action.Accelerate))
+			Input:SetValue(Action.Reverse, Input:GetValue(Action.Reverse))
+
+		end
+	end
 end
 
 justforfun = JustForFun_JC2()

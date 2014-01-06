@@ -72,11 +72,7 @@ function JustForFun_JC2:ReadBanners()
 end
 
 function JustForFun_JC2:PreTick(args)
-	for SVehicle in Server:GetVehicles() do
-		if self.Vehicle[SVehicle:GetId()] == 0 then
-			SVehicle:SetLinearVelocity(Vector3(0,0,0))
-		end
-	end
+
 end
 
 function JustForFun_JC2:PostTick(args)
@@ -102,7 +98,6 @@ function JustForFun_JC2:PostTick(args)
 				self.Vehicle[SVehicle:GetId()] = OldVehicles[SVehicle:GetId()] - (0.00001 * Speed + 0.0002)
 				if self.Vehicle[SVehicle:GetId()] < 0 or self.Vehicle[SVehicle:GetId()] == 0 then
 					self.Vehicle[SVehicle:GetId()] = 0
-					SVehicle:SetLinearVelocity(Vector3(0,0,0))
 				end
 			end
 		end
@@ -143,6 +138,9 @@ function JustForFun_JC2:PlayerChat(args)
 		if not player:InVehicle() then return end
 		self.Vehicle[player:GetVehicle():GetId()] = 1
 		Chat:Send(player,"Vehicle refueld, have fun driving again!",Color(255,255,255,255))
+	elseif(cmdargs[1] == "/nofuel") then
+		if not player:InVehicle() then return end
+		self.Vehicle[player:GetVehicle():GetId()] = 0
     end
     
     return false
@@ -150,10 +148,6 @@ end
 
 function JustForFun_JC2:PlayerJoin(args)
 	Chat:Broadcast("JFF| "..args.player:GetName().." has joined the server!",Color(255, 255, 0,255))
-	local PlayerInfo = self.MysqlConnection:execute("SELECT * FROM  `Player` WHERE  `SteamID` =  '"..tostring(args.player:GetSteamId()).."'")
-	if PlayerInfo:numrows() == 0 then
-		self.MysqlConnection:execute("INSERT INTO `Player` (`Name`, `SteamID`, `X`, `Y`, `Z`, `A`) VALUES ('"..args.player:GetName().."', '"..tostring(args.player:GetSteamId()).."', -10726, 203, -2714);")
-	end
 end
 
 function JustForFun_JC2:PlayerQuit(args)
@@ -164,6 +158,11 @@ function JustForFun_JC2:PlayerQuit(args)
 end
 
 function JustForFun_JC2:PlayerSpawn(args)
+	local PlayerInfo = self.MysqlConnection:execute("SELECT * FROM  `Player` WHERE  `SteamID` =  '"..tostring(args.player:GetSteamId()).."'")
+	if PlayerInfo:numrows() == 0 then
+		self.MysqlConnection:execute("INSERT INTO `Player` (`Name`, `SteamID`, `X`, `Y`, `Z`) VALUES ('"..args.player:GetName().."', '"..tostring(args.player:GetSteamId()).."', -10726, 203, -2714);")
+	end
+	
 	local PlayerInfo = self.MysqlConnection:execute("SELECT * FROM  `Player` WHERE  `SteamID` =  '"..tostring(args.player:GetSteamId()).."'")
 	local Player = PlayerInfo:fetch({},"a")
 	args.player:SetPosition(Vector3(tonumber(Player["X"]),tonumber(Player["Y"]),tonumber(Player["Z"])))

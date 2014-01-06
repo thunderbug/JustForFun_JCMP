@@ -35,6 +35,7 @@ Commands
 * /tphere <playerid> (get another player to you)
 * /spawn (Go to spawn)
 * /refuel (Refuel you car no gas station needed yet)
+* /nofuel (Empty fuel tank)
 
 Extra Info
 ----------

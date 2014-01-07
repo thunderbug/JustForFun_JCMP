@@ -160,7 +160,7 @@ end
 function JustForFun_JC2:PlayerSpawn(args)
 	local PlayerInfo = self.MysqlConnection:execute("SELECT * FROM  `Player` WHERE  `SteamID` =  '"..tostring(args.player:GetSteamId()).."'")
 	if PlayerInfo:numrows() == 0 then
-		self.MysqlConnection:execute("INSERT INTO `Player` (`Name`, `SteamID`, `X`, `Y`, `Z`) VALUES ('"..args.player:GetName().."', '"..tostring(args.player:GetSteamId()).."', -10726, 203, -2714);")
+		self.MysqlConnection:execute("INSERT INTO `Player` (`Name`, `SteamID`, `X`, `Y`, `Z`) VALUES ('"..tostring(args.player:GetName()).."', '"..tostring(args.player:GetSteamId()).."', -10726, 203, -2714);")
 	end
 	
 	local PlayerInfo = self.MysqlConnection:execute("SELECT * FROM  `Player` WHERE  `SteamID` =  '"..tostring(args.player:GetSteamId()).."'")

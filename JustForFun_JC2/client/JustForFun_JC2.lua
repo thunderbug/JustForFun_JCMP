@@ -69,12 +69,10 @@ end
 
 function JustForFun_JC2:InputPoll(args)
 	-- Disable Forward button when no fuel
-	if Input:GetValue(Action.Accelerate) == 1 or Input:GetValue(Action.Reverse) == 1 then
-print(self.fuel)
+	if Input:GetValue(Action.Accelerate) > 0 or Input:GetValue(Action.Reverse) > 0 then
 		if self.fuel == 0 then
 			Input:SetValue(Action.Accelerate, 0)
 			Input:SetValue(Action.Reverse, 0)
-print("test")
 		else
 			Input:SetValue(Action.Accelerate, Input:GetValue(Action.Accelerate))
 			Input:SetValue(Action.Reverse, Input:GetValue(Action.Reverse))

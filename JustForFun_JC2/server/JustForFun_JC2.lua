@@ -5,15 +5,15 @@ function JustForFun_JC2:__init()
 	self.luasql = require("luasql.mysql")
 	self.mysql = self.luasql.mysql()
 	self.MysqlConnection = nil
+	self:MysqlInit()
 
 	-- Ingame Banners
 	self.Banners = {}
 	self.AmountBanners = 0
 	self.CurrentBanner = 0
 	self.BannerTimer = Timer()
-
 	self:ReadBanners()
-	self:MysqlInit()
+	
 	
 	-- Fuel
 	self.Vehicle = {}
@@ -136,14 +136,28 @@ function JustForFun_JC2:PlayerChat(args)
 		player:Teleport(Vector3(-10726, 203, -2714),player:GetAngle())
 	elseif(cmdargs[1] == "/refuel") then
 		if not player:InVehicle() then return end
-		self.Vehicle[player:GetVehicle():GetId()] = 1
-		Chat:Send(player,"Vehicle refueld, have fun driving again!",Color(255,255,255,255))
+		self:ReFuelCommand(args)
 	elseif(cmdargs[1] == "/nofuel") then
 		if not player:InVehicle() then return end
 		self.Vehicle[player:GetVehicle():GetId()] = 0
     end
     
     return false
+end
+
+function JustForFun_JC2:ReFuelCommand(args)
+	local PlayerPosition = args.player:GetPosition()
+	local X = tostring(math.floor(PlayerPosition.x,0))
+	local Z = tostring(math.floor(PlayerPosition.z,0))
+
+	local FuelStation = self.MysqlConnection:execute("SELECT * FROM `FuelStation` WHERE `X-` >= "..X.." AND `X+` <= "..X.." AND `Z-` >= "..Z.." AND `Z+` <= "..Z.."")
+	if FuelStation:numrows() == 0 then
+		Chat:Send(args.player,"Failed to refuel you are not at a fuel station!",Color(255,255,255,255))
+	else
+		local FuelStationInfo = FuelStation:fetch({},"a")
+		self.Vehicle[args.player:GetVehicle():GetId()] = 1
+		Chat:Send(args.player,"Thanks for refueling at "..FuelStationInfo["Name"],Color(255,255,255,255))
+	end
 end
 
 function JustForFun_JC2:PlayerJoin(args)
